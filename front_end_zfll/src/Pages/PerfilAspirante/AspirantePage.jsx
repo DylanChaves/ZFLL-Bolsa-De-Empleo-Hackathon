@@ -1,9 +1,11 @@
 /**
  * AspirantePage.jsx
  * Layout raíz del perfil Aspirante.
- * Estructura: Navbar full-width arriba → Sidebar + Contenido abajo.
+ * Carga los datos del usuario autenticado (cuenta + perfil aspirante) y los muestra.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getMe, getPerfilAspirante } from '../../Services/meServices';
 import Sidebar            from '../../Components/PerfilAspirante/Sidebar/Sidebar';
 import Navbar             from '../../Components/PerfilAspirante/Navbar/Navbar';
 import DashboardAspirante from '../../Components/PerfilAspirante/DashboardAspirante/DashboardAspirante';
@@ -13,11 +15,62 @@ import Postulaciones      from '../../Components/PerfilAspirante/Postulaciones/P
 import ApplyModal         from '../../Components/PerfilAspirante/ApplyModal/ApplyModal';
 import './AspirantePage.css';
 
-const AspirantePage = ({ usuario = null, onLogout }) => {
+const AspirantePage = ({ usuario: usuarioProp = null, onLogout: onLogoutProp }) => {
+  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState(usuarioProp);
+  const [loading, setLoading] = useState(!usuarioProp);
   const [activeView,  setActiveView]  = useState('dashboard');
   const [selectedJob, setSelectedJob] = useState(null);
   const [showApply,   setShowApply]   = useState(false);
   const [toast,       setToast]       = useState('');
+
+  useEffect(() => {
+    if (usuarioProp) {
+      setUsuario(usuarioProp);
+      setLoading(false);
+      return;
+    }
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    const stored = localStorage.getItem('user');
+    const storedUser = stored ? JSON.parse(stored) : null;
+
+    const load = async () => {
+      try {
+        const me = await getMe();
+        let perfil = null;
+        try {
+          perfil = await getPerfilAspirante();
+        } catch {
+          // Perfil aspirante puede no existir aún (404)
+        }
+        setUsuario({
+          id: me.id,
+          email: me.email,
+          phone: me.phone,
+          role: storedUser?.role ?? 'aspirante',
+          nombre_completo: perfil?.nombre_completo || storedUser?.name || me.email?.split('@')[0] || 'Aspirante',
+          ...perfil,
+        });
+      } catch {
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [navigate, usuarioProp]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+    if (onLogoutProp) onLogoutProp();
+    else navigate('/login');
+  };
 
   const notify = (msg) => {
     setToast(msg);
@@ -29,7 +82,7 @@ const AspirantePage = ({ usuario = null, onLogout }) => {
       case 'personal':
         return <PersonalData usuario={usuario} onNotify={notify} />;
       case 'perfil':
-        return <PerfilProfesional onNotify={notify} />;
+        return <PerfilProfesional perfil={usuario || {}} onNotify={notify} />;
       case 'postulaciones':
         return <Postulaciones />;
       default:
@@ -43,13 +96,18 @@ const AspirantePage = ({ usuario = null, onLogout }) => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="ap-root ap-loading">
+        <p>Cargando tu perfil...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="ap-root">
+      <Navbar usuario={usuario} onLogout={handleLogout} />
 
-      {/* ── Navbar: full width ── */}
-      <Navbar usuario={usuario} onLogout={onLogout} />
-
-      {/* ── Body: sidebar + main ── */}
       <div className="ap-body">
         <Sidebar
           activeView={activeView}
@@ -62,7 +120,6 @@ const AspirantePage = ({ usuario = null, onLogout }) => {
         </main>
       </div>
 
-      {/* ── Apply Modal ── */}
       <ApplyModal
         job={selectedJob}
         isOpen={showApply}
@@ -70,7 +127,6 @@ const AspirantePage = ({ usuario = null, onLogout }) => {
         onSubmit={() => { notify('¡Postulación enviada correctamente!'); setShowApply(false); }}
       />
 
-      {/* ── Toast ── */}
       {toast && (
         <div className="ap-toast">
           <span className="ap-toast-dot" />
