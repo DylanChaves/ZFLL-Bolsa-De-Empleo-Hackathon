@@ -35,14 +35,40 @@ class ProgramaFormacion(models.Model):
     class Meta:
         db_table = "programas_formacion"
         verbose_name = "Programa de formación"
-""" 
+
     def __str__(self):
         return f"{self.nombre} ({self.institucion.nombre})"
 
-        const token =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("admin_access_token") ||
-        localStorage.getItem("empresa_access_token");
 
-        if (!token) return; // no llames /notifications/count/
- """
+class UsuarioInstitucional(models.Model):
+    """User profile for institution staff (admin, professor, etc.)."""
+    institucion = models.ForeignKey(
+        Institucion,
+        on_delete=models.CASCADE,
+        related_name="usuarios_institucionales",
+    )
+    usuario = models.OneToOneField(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name="perfil_usuario_institucional",
+    )
+    nombre_completo = models.CharField(max_length=255, blank=True)
+    rol = models.CharField(
+        max_length=20,
+        choices=[
+            ("ADMINISTRADOR", "Administrador"),
+            ("PROFESOR", "Profesor"),
+            ("STAFF", "Staff"),
+        ],
+        default="PROFESOR",
+    )
+    activo = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "usuarios_institucionales"
+        verbose_name = "Usuario institucional"
+        verbose_name_plural = "Usuarios institucionales"
+
+    def __str__(self):
+        return f"{self.nombre_completo or self.usuario.email} ({self.institucion.nombre})"

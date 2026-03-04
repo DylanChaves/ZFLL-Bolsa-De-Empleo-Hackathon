@@ -9,7 +9,7 @@ import {
   createCompany,
   updateCompany,
   updateCompanyStatus,
-} from '../../../Services/Admin/companyService';
+} from '../../../Services/Admin/Companyservice';
 
 const CANTONES = [
   'San José','Escazú','Desamparados','Puriscal','Tarrazú','Aserrí','Mora','Goicoechea',
