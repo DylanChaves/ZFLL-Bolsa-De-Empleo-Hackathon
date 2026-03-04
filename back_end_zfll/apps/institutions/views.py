@@ -7,11 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from shared.permissions import IsInstitucion
+from apps.accounts.models import PerfilPracticante
 from apps.jobs.models import Vacante
 from apps.pasantias.models import SolicitudPasantia
 
-from .models import Institucion, ProgramaFormacion
+from .models import Institucion, ProgramaFormacion, UsuarioInstitucional
 from .serializers import (
+    build_egresado_from_perfil,
+    InstitucionSerializer,
     UsuarioInstitucionalSerializer,
     UsuarioInstitucionalCreateSerializer,
     ProgramaFormacionCRUDSerializer,

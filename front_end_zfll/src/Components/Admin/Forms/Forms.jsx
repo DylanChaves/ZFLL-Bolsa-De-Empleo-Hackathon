@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Building2, GraduationCap, ChevronRight, FileText, XCircle, CheckCircle2, Shield, Loader2 } from 'lucide-react';
 import Card from '../Card/Card.jsx';
 import styles from './Forms.module.css';
-import { getPendingCompanies, updateCompanyStatus }     from '../../../Services/Admin/companyService.js';
+import { getPendingCompanies, updateCompanyStatus }     from '../../../Services/Admin/Companyservice.js';
 import { getPendingInstitutions, updateInstitutionStatus } from '../../../Services/Admin/institutionService.js';
 
 const Forms = () => {

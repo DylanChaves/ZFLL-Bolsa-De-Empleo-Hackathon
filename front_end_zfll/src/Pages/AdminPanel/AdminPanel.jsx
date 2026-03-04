@@ -11,7 +11,7 @@ import Vacancies     from '../../Components/Admin/Vacancies/Vacancies';
 import Forms         from '../../Components/Admin/Forms/Forms';
 import Admins        from '../../Components/Admin/Admins';
 
-import { getPendingCompanies }    from '../../Services/Admin/companyService.js';
+import { getPendingCompanies }    from '../../Services/Admin/Companyservice.js';
 import { getPendingInstitutions } from '../../Services/Admin/institutionService.js';
 
 import styles from './AdminPanel.module.css';

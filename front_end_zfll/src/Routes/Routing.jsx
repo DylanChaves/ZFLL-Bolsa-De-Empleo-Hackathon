@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
-import EmpresaPage from '../Pages/Empresa/EmpresaPage'
+import EmpresaPage from '../Pages/Empresa/empresaPage'
 import Homepage from '../Pages/Homepage/Homepage'
 import AuthPage from '../Pages/Login_Regist/AuthPage'
 import AdminPanel from '../Pages/AdminPanel/AdminPanel'

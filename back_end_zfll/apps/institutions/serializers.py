@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from .models import  ProgramaFormacion,Institucion
+from apps.accounts.models import PerfilPracticante
 from rest_framework import serializers
+
+from .models import Institucion, ProgramaFormacion, UsuarioInstitucional
 
 class ProgramaFormacionSerializer(serializers.ModelSerializer):
     class Meta:
